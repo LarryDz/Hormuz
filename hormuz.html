@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Straights of Hormuz</title>
+
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #f0d080;
+    --gold-dark: #8a6a1e;
+    --deep-navy: #0a0f1e;
+    --ocean: #0d2137;
+    --teal: #1a4a5c;
+    --teal-light: #2a7a8c;
+    --crimson: #8b1a1a;
+    --parchment: #f5e6c8;
+    --card-bg: #fdf6e3;
+    --glow: rgba(201, 168, 76, 0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--deep-navy);
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--parchment);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(26,74,92,0.3) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(13,33,55,0.5) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Wave animation */
+  .waves {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .wave { animation: wave 8s ease-in-out infinite; }
+  .wave:nth-child(2) { animation-delay: -2s; opacity: 0.5; }
+  .wave:nth-child(3) { animation-delay: -4s; opacity: 0.3; }
+  @keyframes wave {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-30px); }
+  }
+
+  .game-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 24px 0 16px;
+    position: relative;
+  }
+  header::before {
+    content: '⚓';
+    font-size: 28px;
+    display: block;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 0 8px var(--gold));
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(22px, 5vw, 42px);
+    color: var(--gold-light);
+    text-shadow: 0 0 30px var(--glow), 0 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 2px;
+    line-height: 1.1;
+  }
+  .subtitle {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    color: var(--teal-light);
+    font-size: 13px;
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+  .ornament {
+    color: var(--gold);
+    font-size: 18px;
+    margin: 8px 0;
+    letter-spacing: 8px;
+  }
+
+  /* Info strip */
+  .info-strip {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 12px 0;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    flex-wrap: wrap;
+  }
+  .info-strip span { opacity: 0.8; }
+  .info-strip strong { color: var(--gold-light); }
+
+  /* Scoreboard */
+  .scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 10px 0 16px;
+  }
+  .score-box {
+    background: rgba(13,33,55,0.8);
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 8px 20px;
+    text-align: center;
+    min-width: 100px;
+  }
+  .score-label { font-size: 9px; letter-spacing: 2px; color: var(--teal-light); text-transform: uppercase; }
+  .score-value { font-size: 22px; color: var(--gold-light); font-weight: 700; }
+
+  /* Table felt */
+  .table {
+    background: radial-gradient(ellipse at center, #1a4a2a 0%, #0d2e18 60%, #081a0e 100%);
+    border-radius: 180px;
+    border: 6px solid var(--gold-dark);
+    box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 60px rgba(0,0,0,0.4), 0 0 0 2px rgba(201,168,76,0.2);
+    padding: 30px 20px;
+    margin: 10px 0;
+    position: relative;
+  }
+  .table::before {
+    content: '✦ STRAIGHTS OF HORMUZ ✦';
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: rgba(201,168,76,0.25);
+    white-space: nowrap;
+  }
+
+  .hand-section { margin: 10px 0; }
+  .hand-label {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
+
+  /* Cards */
+  .hand {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-height: 130px;
+    align-items: center;
+  }
+
+  .card {
+    width: 72px;
+    height: 108px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid #d4c5a0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.5);
+    animation: dealIn 0.3s ease-out backwards;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @keyframes dealIn {
+    from { transform: translateY(-40px) scale(0.8); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  .card:nth-child(1) { animation-delay: 0.0s; }
+  .card:nth-child(2) { animation-delay: 0.08s; }
+  .card:nth-child(3) { animation-delay: 0.16s; }
+  .card:nth-child(4) { animation-delay: 0.24s; }
+  .card:nth-child(5) { animation-delay: 0.32s; }
+
+  .card.red { color: #c0392b; }
+  .card.black { color: #1a1a2e; }
+
+  .card.selected {
+    transform: translateY(-14px);
+    box-shadow: 0 0 16px rgba(201,168,76,0.8), 2px 4px 12px rgba(0,0,0,0.5);
+    border-color: var(--gold);
+    background: #fffbee;
+  }
+  .card.selected::after {
+    content: 'HOLD';
+    position: absolute;
+    bottom: -22px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold-light);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .card:hover:not(.dealer-card):not(.card-back) { transform: translateY(-4px); }
+  .card.selected:hover { transform: translateY(-14px); }
+
+  .card-rank { font-size: 20px; line-height: 1; }
+  .card-suit { font-size: 22px; line-height: 1; }
+
+  .card-back {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+    cursor: default;
+  }
+  .card-back::before {
+    content: '🌊';
+    font-size: 32px;
+    filter: brightness(0.6);
+  }
+
+  /* Divider */
+  .divider {
+    text-align: center;
+    color: var(--gold-dark);
+    font-size: 10px;
+    letter-spacing: 4px;
+    margin: 6px 0;
+    opacity: 0.6;
+  }
+
+  /* Result banner */
+  .result-banner {
+    text-align: center;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin: 12px 0;
+    font-size: clamp(14px, 3vw, 20px);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    min-height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s;
+  }
+  .result-banner.win {
+    background: linear-gradient(135deg, rgba(13,80,40,0.8), rgba(20,100,50,0.6));
+    border: 2px solid #2ecc71;
+    color: #afffcf;
+    text-shadow: 0 0 20px rgba(46,204,113,0.8);
+    animation: pulse-win 0.6s ease;
+  }
+  .result-banner.lose {
+    background: linear-gradient(135deg, rgba(80,13,13,0.8), rgba(100,20,20,0.6));
+    border: 2px solid #e74c3c;
+    color: #ffafaf;
+  }
+  .result-banner.push {
+    background: linear-gradient(135deg, rgba(40,40,80,0.8), rgba(60,60,100,0.6));
+    border: 2px solid var(--gold-dark);
+    color: var(--gold-light);
+  }
+  .result-banner.idle {
+    background: rgba(13,33,55,0.4);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: rgba(201,168,76,0.5);
+    font-size: 11px;
+    letter-spacing: 3px;
+  }
+  @keyframes pulse-win {
+    0% { transform: scale(0.95); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+  .hand-name { font-size: 11px; color: var(--gold); letter-spacing: 2px; margin-top: 4px; font-family: Georgia, 'Times New Roman', serif; }
+
+  /* Straight highlight */
+  .straight-glow .card {
+    box-shadow: 0 0 20px rgba(201,168,76,0.9), 2px 4px 12px rgba(0,0,0,0.5);
+    border-color: var(--gold-light);
+    animation: straightPulse 1s ease-in-out 3;
+  }
+  @keyframes straightPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201,168,76,0.9); }
+    50% { box-shadow: 0 0 40px rgba(201,168,76,1), 0 0 60px rgba(240,208,128,0.5); }
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 14px 0;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.4s;
+  }
+  .btn:hover::before { left: 100%; }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn:disabled::before { display: none; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-dark));
+    color: var(--deep-navy);
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(201,168,76,0.4);
+  }
+  .btn-primary:hover:not(:disabled) {
+    box-shadow: 0 6px 24px rgba(201,168,76,0.7);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: rgba(26,74,92,0.8);
+    color: var(--parchment);
+    border: 1px solid var(--teal-light);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--teal);
+    border-color: var(--gold-dark);
+  }
+
+  /* Rankings panel */
+  .rankings {
+    background: rgba(10,15,30,0.7);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    font-size: 11px;
+  }
+  .rankings-title {
+    text-align: center;
+    color: var(--gold);
+    letter-spacing: 3px;
+    font-size: 10px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .rank-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 2px 0;
+    transition: background 0.2s;
+  }
+  .rank-row:hover { background: rgba(201,168,76,0.08); }
+  .rank-num { color: var(--gold-dark); width: 18px; font-size: 10px; }
+  .rank-name { flex: 1; color: var(--parchment); opacity: 0.85; }
+  .rank-desc { color: var(--teal-light); font-size: 9px; text-align: right; }
+  .rank-row.highlight {
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+  }
+  .rank-row.highlight .rank-name { color: var(--gold-light); font-weight: 600; }
+  .rank-row.highlight .rank-num { color: var(--gold); }
+
+  .msg { text-align: center; font-size: 11px; color: var(--teal-light); margin: 6px 0; font-family: Georgia, 'Times New Roman', serif; font-style: italic; }
+
+  /* Phase indicator */
+  .phase-hint {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(201,168,76,0.5);
+    margin: 4px 0;
+    min-height: 16px;
+  }
+</style>
+</head>
+<body>
+
+<svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
+  <defs><path id="wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z"/></defs>
+  <g class="wave"><use href="#wave" x="48" y="0" fill="#1a4a5c"/></g>
+  <g class="wave"><use href="#wave" x="48" y="3" fill="#0d2e40"/></g>
+  <g class="wave"><use href="#wave" x="48" y="5" fill="#0a1a2e"/></g>
+</svg>
+
+<div class="game-wrapper">
+  <header>
+    <h1>The Straights of Hormuz</h1>
+    <div class="subtitle">Where every vessel seeks a straight passage</div>
+    <div class="ornament">⋯ ✦ ⋯</div>
+  </header>
+
+  <div class="info-strip">
+    <span>🌊 <strong>STRAIGHTS RULE SUPREME</strong> — beat Four of a Kind & Full House</span>
+  </div>
+
+  <div class="scoreboard">
+    <div class="score-box">
+      <div class="score-label">Your Vessels</div>
+      <div class="score-value" id="player-score">0</div>
+    </div>
+    <div class="score-box" style="min-width:80px; padding:8px 12px;">
+      <div class="score-label">Round</div>
+      <div class="score-value" id="round-num">1</div>
+    </div>
+    <div class="score-box">
+      <div class="score-label">I-A-Toll-Ya</div>
+      <div class="score-value" id="dealer-score">0</div>
+    </div>
+  </div>
+
+  <div class="table">
+    <!-- Dealer -->
+    <div class="hand-section">
+      <div class="hand-label">⚓ The I-A-Toll-Ya's Hand</div>
+      <div class="hand" id="dealer-hand"></div>
+      <div class="hand-name" id="dealer-hand-name" style="text-align:center; margin-top:6px;"></div>
+    </div>
+
+    <div class="divider">✦ · · · · · THE STRAIT · · · · · ✦</div>
+
+    <!-- Result -->
+    <div class="result-banner idle" id="result-banner">
+      Navigate the Strait — press DEAL to begin your voyage
+    </div>
+
+    <div class="phase-hint" id="phase-hint"></div>
+
+    <!-- Player -->
+    <div class="hand-section">
+      <div class="hand-label">🚢 Your Fleet (click cards to HOLD / unhold)</div>
+      <div class="hand" id="player-hand"></div>
+      <div class="hand-name" id="player-hand-name" style="text-align:center; margin-top:22px;"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" id="btn-deal" onclick="startRound()">⚓ Deal</button>
+    <button class="btn btn-primary" id="btn-draw" onclick="drawCards()" disabled>🌊 Draw Cards</button>
+    <button class="btn btn-secondary" id="btn-stand" onclick="standPat()" disabled>⚑ Stand Pat</button>
+    <button class="btn btn-secondary" id="btn-reset" onclick="resetGame()">↺ New Voyage</button>
+  </div>
+  <div style="text-align:center; margin: 4px 0;">
+    <span id="draws-display" style="font-size:11px; letter-spacing:2px; color: var(--gold); opacity:0;"></span>
+  </div>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="rankings">
+    <div class="rankings-title">⚓ Hand Rankings — The Law of the Strait ⚓</div>
+    <div class="rank-row"><span class="rank-num">1</span><span class="rank-name">Royal Flush</span><span class="rank-desc">A-K-Q-J-10, same suit</span></div>
+    <div class="rank-row"><span class="rank-num">2</span><span class="rank-name">Straight Flush</span><span class="rank-desc">Five in sequence, same suit</span></div>
+    <div class="rank-row highlight"><span class="rank-num">3</span><span class="rank-name">⭐ Straight — Strait Passage!</span><span class="rank-desc">Five in sequence — BEATS 4-of-a-kind!</span></div>
+    <div class="rank-row"><span class="rank-num">4</span><span class="rank-name">Four of a Kind</span><span class="rank-desc">Four matching ranks</span></div>
+    <div class="rank-row"><span class="rank-num">5</span><span class="rank-name">Full House</span><span class="rank-desc">Three of a kind + pair</span></div>
+    <div class="rank-row"><span class="rank-num">6</span><span class="rank-name">Flush</span><span class="rank-desc">Five of same suit</span></div>
+    <div class="rank-row"><span class="rank-num">7</span><span class="rank-name">Three of a Kind</span><span class="rank-desc">Three matching ranks</span></div>
+    <div class="rank-row"><span class="rank-num">8</span><span class="rank-name">Two Pair</span><span class="rank-desc">Two pairs</span></div>
+    <div class="rank-row"><span class="rank-num">9</span><span class="rank-name">One Pair</span><span class="rank-desc">One pair</span></div>
+    <div class="rank-row"><span class="rank-num">10</span><span class="rank-name">High Card</span><span class="rank-desc">No matching ranks</span></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DECK & CARD UTILS
+// ============================================================
+const SUITS = ['♠','♥','♦','♣'];
+const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const RANK_VAL = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13,'A':14};
+
+function makeDeck() {
+  const deck = [];
+  for (const suit of SUITS)
+    for (const rank of RANKS)
+      deck.push({ suit, rank, val: RANK_VAL[rank] });
+  return deck;
+}
+
+function shuffle(deck) {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+
+function isRed(card) { return card.suit === '♥' || card.suit === '♦'; }
+
+// ============================================================
+// HAND EVALUATION
+// ============================================================
+// Rankings (lower = better):
+// 1=Royal Flush, 2=Straight Flush, 3=STRAIGHT, 4=Four of a Kind,
+// 5=Full House, 6=Flush, 7=Three of a Kind, 8=Two Pair, 9=Pair, 10=High Card
+
+function evaluateHand(hand) {
+  const vals = hand.map(c => c.val).sort((a,b) => a-b);
+  const suits = hand.map(c => c.suit);
+  const counts = {};
+  for (const v of vals) counts[v] = (counts[v]||0) + 1;
+  const freq = Object.values(counts).sort((a,b) => b-a);
+  const isFlush = suits.every(s => s === suits[0]);
+  
+  // Check straight (including A-low)
+  function checkStraight(vs) {
+    const uv = [...new Set(vs)].sort((a,b)=>a-b);
+    if (uv.length < 5) return false;
+    // Normal
+    let straight = uv[4]-uv[0]===4 && uv.length===5;
+    // A-low: A,2,3,4,5
+    if (!straight && uv.includes(14)) {
+      const low = uv.filter(v=>v!==14);
+      straight = low.length===4 && low[3]-low[0]===3 && low[0]===2;
+    }
+    return straight;
+  }
+  const isStraight = checkStraight(vals);
+
+  // Royal flush
+  if (isFlush && isStraight && vals.includes(14) && vals.includes(13)) {
+    return { rank: 1, name: '⚡ Royal Flush — The Golden Passage!' };
+  }
+  if (isFlush && isStraight) {
+    return { rank: 2, name: '🌟 Straight Flush — Hormuz Express!' };
+  }
+  // STRAIGHT — the star of this game
+  if (isStraight) {
+    return { rank: 3, name: '⭐ Strait Passage! (beats 4-of-a-kind)' };
+  }
+  if (freq[0] === 4) {
+    return { rank: 4, name: '🔥 Four of a Kind' };
+  }
+  if (freq[0] === 3 && freq[1] === 2) {
+    return { rank: 5, name: '⚓ Full House' };
+  }
+  if (isFlush) {
+    return { rank: 6, name: '🌊 Flush' };
+  }
+  if (freq[0] === 3) {
+    return { rank: 7, name: '🚢 Three of a Kind' };
+  }
+  if (freq[0] === 2 && freq[1] === 2) {
+    return { rank: 8, name: '⛵ Two Pair' };
+  }
+  if (freq[0] === 2) {
+    return { rank: 9, name: '🪝 One Pair' };
+  }
+  return { rank: 10, name: '🌐 High Card' };
+}
+
+function highCardTiebreak(hand1, hand2) {
+  const v1 = hand1.map(c=>c.val).sort((a,b)=>b-a);
+  const v2 = hand2.map(c=>c.val).sort((a,b)=>b-a);
+  for (let i=0; i<5; i++) {
+    if (v1[i] > v2[i]) return 1;
+    if (v1[i] < v2[i]) return -1;
+  }
+  return 0;
+}
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let deck = [], playerHand = [], dealerHand = [];
+let held = [false,false,false,false,false];
+let phase = 'idle'; // idle, draw, result
+let playerScore = 0, dealerScore = 0, roundNum = 1;
+let dealerRevealed = false;
+let drawsLeft = 3;
+
+const DRAW_LABELS = ['', 'Final Draw!', '2nd Draw', '3rd Draw — Go!'];
+
+function updateDrawsDisplay() {
+  const el = document.getElementById('draws-display');
+  if (phase !== 'draw') { el.style.opacity = 0; return; }
+  el.style.opacity = 1;
+  const pips = '🌊'.repeat(drawsLeft) + '○'.repeat(3 - drawsLeft);
+  el.textContent = `DRAWS REMAINING: ${drawsLeft}  ${pips}`;
+}
+
+function startRound() {
+  deck = shuffle(makeDeck());
+  held = [false,false,false,false,false];
+  dealerRevealed = false;
+  drawsLeft = 3;
+  phase = 'draw';
+
+  playerHand = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+  dealerHand = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
+
+  renderPlayerHand();
+  renderDealerHand(false);
+  document.getElementById('player-hand-name').textContent = evaluateHand(playerHand).name;
+  document.getElementById('dealer-hand-name').textContent = '';
+
+  document.getElementById('result-banner').className = 'result-banner idle';
+  document.getElementById('result-banner').innerHTML = 'Hold cards, then Draw — up to 3 times';
+  document.getElementById('phase-hint').textContent = '🔒 Select cards to keep, then draw replacements';
+  document.getElementById('btn-deal').disabled = true;
+  document.getElementById('btn-draw').disabled = false;
+  document.getElementById('btn-stand').disabled = false;
+  document.getElementById('msg').textContent = '';
+  updateDrawsDisplay();
+}
+
+function drawCards() {
+  // Replace unheld cards
+  for (let i=0; i<5; i++) {
+    if (!held[i]) playerHand[i] = deck.pop();
+  }
+  held = [false,false,false,false,false];
+  drawsLeft--;
+
+  renderPlayerHand();
+  document.getElementById('player-hand-name').textContent = evaluateHand(playerHand).name;
+  updateDrawsDisplay();
+
+  if (drawsLeft === 0) {
+    resolveRound();
+  } else {
+    // Stay in draw phase
+    const hint = drawsLeft === 1
+      ? '⚠️ Last draw — choose wisely, navigator!'
+      : `${drawsLeft} draws remaining — hold cards or draw again`;
+    document.getElementById('phase-hint').textContent = hint;
+    document.getElementById('result-banner').className = 'result-banner idle';
+    document.getElementById('result-banner').innerHTML = `Hold cards, then Draw or Stand Pat`;
+    const drawBtn = document.getElementById('btn-draw');
+    drawBtn.textContent = drawsLeft === 1 ? '🌊 Final Draw!' : `🌊 Draw Again`;
+  }
+}
+
+function standPat() {
+  if (phase !== 'draw') return;
+  drawsLeft = 0;
+  resolveRound();
+}
+
+function resolveRound() {
+  phase = 'result';
+
+  // Dealer draws up to 3 times with AI
+  for (let pass = 0; pass < 3; pass++) dealerAI();
+
+  const pEval = evaluateHand(playerHand);
+  const dEval = evaluateHand(dealerHand);
+  let outcome;
+  if (pEval.rank < dEval.rank) outcome = 'win';
+  else if (pEval.rank > dEval.rank) outcome = 'lose';
+  else {
+    const tb = highCardTiebreak(playerHand, dealerHand);
+    outcome = tb > 0 ? 'win' : tb < 0 ? 'lose' : 'push';
+  }
+
+  if (outcome === 'win') playerScore++;
+  else if (outcome === 'lose') dealerScore++;
+
+  document.getElementById('player-score').textContent = playerScore;
+  document.getElementById('dealer-score').textContent = dealerScore;
+  document.getElementById('round-num').textContent = ++roundNum;
+
+  renderPlayerHand(pEval.rank === 3);
+  renderDealerHand(true, dEval.rank === 3);
+  document.getElementById('player-hand-name').textContent = pEval.name;
+  document.getElementById('dealer-hand-name').textContent = dEval.name;
+
+  const banner = document.getElementById('result-banner');
+  const msgs = {
+    win: ['⚓ Strait cleared — you pass!', '🌊 Smooth passage through the Strait!', '⭐ Your fleet sails through!'],
+    lose: ['🌊 The I-A-Toll-Ya blocks your passage', '⚓ Turned back at the Strait', '🚢 The I-A-Toll-Ya prevails'],
+    push: ['⚑ Standoff at the Strait — a draw!']
+  };
+  const outcomeMsg = msgs[outcome][Math.floor(Math.random()*msgs[outcome].length)];
+  banner.className = `result-banner ${outcome}`;
+  banner.innerHTML = outcomeMsg + `<div class="hand-name">You: ${pEval.name} &nbsp;|&nbsp; I-A-Toll-Ya: ${dEval.name}</div>`;
+
+  document.getElementById('phase-hint').textContent = '';
+  document.getElementById('btn-deal').disabled = false;
+  document.getElementById('btn-draw').disabled = true;
+  document.getElementById('btn-stand').disabled = true;
+  document.getElementById('btn-draw').textContent = '🌊 Draw Cards';
+  updateDrawsDisplay();
+
+  if (outcome === 'win' && pEval.rank === 3) {
+    document.getElementById('msg').textContent = '✨ STRAIT PASSAGE! The supreme Hormuz hand! ✨';
+  } else if (outcome === 'win') {
+    document.getElementById('msg').textContent = 'Victory! Deal again to continue your voyage.';
+  } else if (outcome === 'lose') {
+    document.getElementById('msg').textContent = 'Repelled! Try again, navigator.';
+  } else {
+    document.getElementById('msg').textContent = 'A stalemate in the Strait. Deal again.';
+  }
+}
+
+function dealerAI() {
+  // Dealer holds: pairs, three-of-a-kind, four-of-a-kind, flushes, straights
+  // Otherwise draws to improve
+  const dEval = evaluateHand(dealerHand);
+  // Hold if already decent (rank <= 7)
+  if (dEval.rank <= 7) return;
+  // Otherwise discard non-pair cards
+  const vals = dealerHand.map(c=>c.val);
+  const counts = {};
+  for (const v of vals) counts[v] = (counts[v]||0)+1;
+  const newHand = [];
+  for (const c of dealerHand) {
+    if (counts[c.val] >= 2) newHand.push(c);
+    else newHand.push(deck.pop());
+  }
+  dealerHand = newHand.slice(0,5);
+}
+
+function toggleHold(i) {
+  if (phase !== 'draw') return;
+  held[i] = !held[i];
+  renderPlayerHand();
+}
+
+function renderCard(card, idx, clickable, isHeld, dealerFace) {
+  if (dealerFace === false) {
+    return `<div class="card card-back dealer-card"></div>`;
+  }
+  const color = isRed(card) ? 'red' : 'black';
+  const heldClass = isHeld ? 'selected' : '';
+  const dataIdx = clickable ? `data-idx="${idx}"` : '';
+  return `<div class="card ${color} ${heldClass}" ${dataIdx}>
+    <div class="card-rank" style="pointer-events:none">${card.rank}</div>
+    <div class="card-suit" style="pointer-events:none">${card.suit}</div>
+  </div>`;
+}
+
+function renderPlayerHand(glow) {
+  const handDiv = document.getElementById('player-hand');
+  handDiv.className = 'hand' + (glow ? ' straight-glow' : '');
+  handDiv.innerHTML = playerHand.map((c,i) =>
+    renderCard(c, i, phase==='draw', held[i])
+  ).join('');
+  if (phase === 'result') {
+    document.getElementById('player-hand-name').textContent = evaluateHand(playerHand).name;
+  }
+}
+
+// Event delegation for card taps — works reliably on iOS Safari
+document.getElementById('player-hand').addEventListener('click', function(e) {
+  const card = e.target.closest('[data-idx]');
+  if (card) toggleHold(parseInt(card.dataset.idx));
+});
+document.getElementById('player-hand').addEventListener('touchend', function(e) {
+  const card = e.target.closest('[data-idx]');
+  if (card) { e.preventDefault(); toggleHold(parseInt(card.dataset.idx)); }
+});
+
+function renderDealerHand(reveal, glow) {
+  const handDiv = document.getElementById('dealer-hand');
+  handDiv.className = 'hand' + (glow ? ' straight-glow' : '');
+  if (!reveal) {
+    handDiv.innerHTML = dealerHand.map(() => `<div class="card card-back dealer-card"></div>`).join('');
+  } else {
+    handDiv.innerHTML = dealerHand.map((c,i) => renderCard(c, i, false, false, true)).join('');
+  }
+}
+
+function resetGame() {
+  playerScore = 0; dealerScore = 0; roundNum = 1;
+  drawsLeft = 3;
+  document.getElementById('player-score').textContent = 0;
+  document.getElementById('dealer-score').textContent = 0;
+  document.getElementById('round-num').textContent = 1;
+  document.getElementById('player-hand').innerHTML = '';
+  document.getElementById('dealer-hand').innerHTML = '';
+  document.getElementById('player-hand-name').textContent = '';
+  document.getElementById('dealer-hand-name').textContent = '';
+  document.getElementById('result-banner').className = 'result-banner idle';
+  document.getElementById('result-banner').innerHTML = 'Navigate the Strait — press DEAL to begin your voyage';
+  document.getElementById('phase-hint').textContent = '';
+  document.getElementById('msg').textContent = '';
+  document.getElementById('btn-deal').disabled = false;
+  document.getElementById('btn-draw').disabled = true;
+  document.getElementById('btn-draw').textContent = '🌊 Draw Cards';
+  document.getElementById('btn-stand').disabled = true;
+  document.getElementById('draws-display').style.opacity = 0;
+  phase = 'idle';
+}
+</script>
+</body>
+</html>
